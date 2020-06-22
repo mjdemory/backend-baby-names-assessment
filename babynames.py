@@ -7,6 +7,8 @@
 # Licensed under the Apache License, Version 2.0
 # http://www.apache.org/licenses/LICENSE-2.0
 
+__author__ = "Michael DeMory with help from Tiffany McLean"
+
 """
 Define the extract_names() function below and change main()
 to call it.
@@ -43,9 +45,30 @@ def extract_names(filename):
     the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', 'Aaron 57', 'Abagail 895', ...]
     """
+
+    
+    
     names = []
-    # +++your code here+++
-    return names
+    with open(filename, "r") as f:
+        contents = f.read()
+        year = re.search(r'Popularity\sin\s(\d\d\d\d)', contents)
+        b_year = year.group(1)
+        names.append(b_year)
+    
+        b_name = re.findall (r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', contents)
+        # b_names = b_name.group(1)
+        b_namesdict = {}
+        for name in b_name:
+            if not name[1] in b_namesdict:
+                b_namesdict[name[1]] = name[0]
+            if not name[2] in b_namesdict:
+                b_namesdict[name[2]] = name[0]
+        for key in sorted(b_namesdict):
+            names.append(key + ' ' + b_namesdict[key])
+
+        # for line in contents:
+        #     print(line, end='')
+        return names
 
 
 def create_parser():
@@ -82,7 +105,14 @@ def main(args):
     # Use the create_summary flag to decide whether to print the list
     # or to write the list to a summary file (e.g. `baby1990.html.summary`).
 
-    # +++your code here+++
+    for filename in file_list:
+        b_names_call = extract_names(filename)
+        new_b_name_list = '\n'.join(b_names_call)
+        if create_summary:
+            with open(filename + '.summary', 'w') as f:
+                f.write(new_b_name_list + "\n")
+        else:
+            print(new_b_name_list)
 
 
 if __name__ == '__main__':
